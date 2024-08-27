@@ -14,7 +14,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import os
-
+from scipy.stats import spearmanr
 
 
 gwas_session_ls = \
@@ -219,7 +219,8 @@ def corrfunc(x, y, **kwds):
     ax = plt.gca()
     ax.tick_params(bottom=False, top=False, left=False, right=False)
     sns.despine(ax=ax, bottom=True, top=True, left=True, right=True)
-    r, _ = pearsonr(x, y)
+    #r, _ = pearsonr(x, y)
+    r, _ = spearmanr(x, y)
     facecolor = cmap(norm(r))
     print(facecolor)
     #ax.set_facecolor(facecolor)
@@ -229,8 +230,10 @@ def corrfunc(x, y, **kwds):
     ax.scatter(np.max(x)/2,np.max(y)/2, s=r*10000,color=facecolor,edgecolors='silver')
     #ax.scatter(.5, .5, s=r*10000,color=facecolor,edgecolors='silver')
     #ax.add_patch(plt.Circle((np.max(x)/2,np.max(y)/2), 0.2, color=facecolor))
+    #ax.annotate(f"r={r:.2f}", xy=(.5, .5), xycoords=ax.transAxes, weight="bold",
+    #            color='white' if lightness < 0.7 else 'black', size=25, ha='center', va='center')
     ax.annotate(f"r={r:.2f}", xy=(.5, .5), xycoords=ax.transAxes, weight="bold",
-                color='white' if lightness < 0.7 else 'black', size=25, ha='center', va='center')
+                color='black' if lightness < 0.7 else 'black', size=25, ha='center', va='center')
     #ax.annotate(f"{r:.2f}", xy=(.3, .47), xycoords=ax.transAxes)    
 
 order = ['ecaviar', 'coloc', 'fastenloc', 'smr', 'predixcan', 'fusion']
