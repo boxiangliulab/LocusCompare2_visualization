@@ -12,12 +12,13 @@ RESULT_TYPE_PVAL = 'pval'
 RESULT_TYPE_PROB = 'prob'
 # list of (tool, key_col_in_tool_result, tool_result_type)
 TOOL_SIG_COL_INFO = [('coloc', 'overall_H4', RESULT_TYPE_PROB),
-                     ('fastenloc', 'GLCP', RESULT_TYPE_PROB),
+                     ('fastenloc', 'GRCP', RESULT_TYPE_PROB),
                      ('smr', 'PROB', RESULT_TYPE_PROB),
                      ('predixcan', 'PROB', RESULT_TYPE_PROB),
                      ('ecaviar', 'clpp', RESULT_TYPE_PROB),
                      ('twas', 'PROB', RESULT_TYPE_PROB)
                      ]
+
 
 AVG_RANKING_COL_NAME = 'avg_ranking'
 
@@ -183,26 +184,21 @@ def plot_precision_recall_f1_comb_bar(
         mark_cols.append(f'{tool}_mark')
 
     xticklbl = [str(c) for c in count]
-
     # precision mean
     plt.figure().clear()
-
     fig, ax = plt.subplots(figsize=(2.5, 5.5))
-    # sns.set(font_scale=1.3)
     plt.rcParams['font.size'] = '16'
-    # ax.set_facecolor("white")
     ax.grid(False)
-    rects = ax.bar(count, precision_means, 0.5, label='Precision Mean', color='tan')
-    ax.bar_label(rects, fmt='{:0.2f}', fontsize=10)
-    ax.errorbar(count, precision_means, yerr=precision_stds, fmt=',', ecolor='grey', capsize=2, elinewidth=1)
+    ax.errorbar(count, precision_means, yerr=precision_stds, fmt='o', color='black',
+             ecolor='lightgray', elinewidth=1.5, capsize=4)
     ax.set(xticks=[*count], xticklabels=xticklbl)
-    ax.set_ylim(0.7,1.04)
-    # ax.set(yticks=np.array([0,0.2,0.4,0.6,0.8,1.0]))
+    ax.set_ylim(0.75,1.04)
     ax.set_xticklabels(np.array([1,2,3,4,5,6]), fontsize=13)
     ax.set_yticklabels(np.array([0.7,0.75,0.80,0.85,0.9,0.95,1.00]), fontsize=13)
     ax.set_ylabel('Precision', fontsize=13)
-    ax.set_xlabel('Num of tools', fontsize=13)
-    #ax.set_title(f'Precision Mean of different combinations of tools', fontsize=15)
+    ax.set_xlabel('Num of GIMs', fontsize=13)
+    for n,v in zip(count,precision_means):
+        ax.text(n-0.35, v+0.01, round(v,2),size=10)
     plt.savefig(f'{output_figure_prefix}_{typ}_precision.png', dpi=300, format='png', bbox_inches='tight')
     plt.savefig(f'{output_figure_prefix}_{typ}_precision.pdf', dpi=300, format='pdf', bbox_inches='tight')
     plt.close()
@@ -210,28 +206,42 @@ def plot_precision_recall_f1_comb_bar(
 
     # recall mean
     plt.figure().clear()
-    #fig, ax = plt.subplots(figsize=(5.5, 5.5))
     fig, ax = plt.subplots(figsize=(2.5, 5.5))
-    
-    # sns.set(font_scale=1.3)
     plt.rcParams['font.size'] = '16'
-    # ax.set_facecolor("white")
     ax.grid(False)
-    rects = ax.bar(count, recall_means, 0.5, label='Recall Mean', color='tan')
-    ax.bar_label(rects, fmt='{:0.2f}', fontsize=10)
-    ax.errorbar(count, recall_means, yerr=recall_stds, fmt=',', ecolor='grey', capsize=2, elinewidth=1)
+    ax.errorbar(count, recall_means, yerr=recall_stds, fmt='o', color='black',
+             ecolor='lightgray', elinewidth=1.5, capsize=4)
     ax.set(xticks=[*count], xticklabels=xticklbl)
-    # ax.set(yticks=np.array([0,0.2,0.4,0.6,0.8,1.0]))
+    ax.set_ylim(0.30,0.6)
     ax.set_xticklabels(np.array([1,2,3,4,5,6]), fontsize=13)
-    ax.set_yticklabels(np.array([0,0.1,0.2,0.3,0.4,0.5,0.6]), fontsize=13)
+    ax.set_yticklabels(np.array([0.35, 0.4,0.45,0.5,0.55,0.6]), fontsize=13)
     ax.set_ylabel('Recall', fontsize=13)
-    ax.set_xlabel('Num of tools', fontsize=13)
+    ax.set_xlabel('Num of GIMs', fontsize=13)
+    for n,v in zip(count,recall_means):
+        ax.text(n-0.39, v+0.005, round(v,2),size=10)
     #ax.set_title(f'Recall Mean of different combinations of tools', fontsize=15)
     plt.savefig(f'{output_figure_prefix}_{typ}_recall.png', dpi=300, format='png', bbox_inches='tight')
     plt.savefig(f'{output_figure_prefix}_{typ}_recall.pdf', dpi=300, format='pdf', bbox_inches='tight')
     plt.close()
 
-
+    ## f1 mean
+    #plt.figure().clear()
+    #fig, ax = plt.subplots(figsize=(5.5, 5.5))
+    #plt.rcParams['font.size'] = '16'
+    ## ax.set_facecolor("white")
+    ## ax.grid(False)
+    #rects = ax.bar(count, f1_means, 0.5, label='F1 Mean', color='tan')
+    #ax.bar_label(rects, fmt='{:0.2f}', fontsize=15)
+    #ax.errorbar(count, f1_means, yerr=f1_stds, fmt=',', ecolor='grey', capsize=2, elinewidth=1)
+    #ax.set(xticks=[*count], xticklabels=xticklbl)
+    ## ax.set(yticks=np.array([0,0.2,0.4,0.6,0.8,1.0]))
+    ## ax.set_xticklabels(np.array([1,2,3,4,5,6]), fontsize=13)
+    ## ax.set_yticklabels(np.array([0,0.1,0.2,0.3,0.4,0.5,0.6]), fontsize=13)
+    #ax.set_ylabel('F1', fontsize=15)
+    #ax.set_xlabel('Num of tools', fontsize=15)
+    #ax.set_title(f'F1 Mean of different combinations of tools', fontsize=15)
+    #plt.savefig(f'{output_figure_prefix}_{typ}_f1.png', dpi=300, format='png', bbox_inches='tight')
+    #plt.savefig(f'{output_figure_prefix}_{typ}_f1.pdf', dpi=300, format='pdf', bbox_inches='tight')
     #plt.close()
     return n_union_df
 
@@ -242,10 +252,10 @@ n_union_df = plot_precision_recall_f1_comb_bar(
         'smr': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newsmr_merged_qvalue.tsv',
         'coloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newcoloc_merged.tsv',
         'ecaviar': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newecaviar_merged.tsv', 
-        'fastenloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newfastenloc_GLCP_merged.tsv',
+        'fastenloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240922/newfastenlocv3.1_GRCP_merged.tsv',
         'predixcan': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newpredixcan_merged_qvalue.tsv'
     },
-    output_figure_prefix='/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/new_sim_without_mv_twas_qval_glcp',
+    output_figure_prefix='/Users/phoebel/github/locuscompare2_private/new_sim_result_20240922/new_sim_without_mv_grcp',
     typ='UNION')
     
     
@@ -256,10 +266,10 @@ plot_precision_recall_f1_comb_bar(
         'smr': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newsmr_merged_qvalue.tsv',
         'coloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newcoloc_merged.tsv',
         'ecaviar': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newecaviar_merged.tsv', 
-        'fastenloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newfastenloc_GLCP_merged.tsv',
+        'fastenloc': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240922/newfastenlocv3.1_GRCP_merged.tsv',
         'predixcan': '/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/newpredixcan_merged_qvalue.tsv'
     },
-    output_figure_prefix='/Users/phoebel/github/locuscompare2_private/new_sim_result_20240511/new_sim_wihtout_mv_twas_qval_glcp',
+    output_figure_prefix='/Users/phoebel/github/locuscompare2_private/new_sim_result_20240922/new_sim_wihtout_mv_grcp',
     typ='INTER')
 
 
