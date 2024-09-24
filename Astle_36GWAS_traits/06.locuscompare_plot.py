@@ -84,8 +84,8 @@ gwastraitname = {
     "GCST004634": "Basophil percentage of granulocytes",
 }
 
-gene_symbol = pd.read_csv('/home/liulab/datasource/gencode.v26.basic.annotation.gtf.gz',
-                          sep='\t',comment='#',header=None)
+gene_symbol = pd.read_csv('/work/lc_data/datasource/gencode.v26.basic.annotation.gtf.gz',
+                        sep='\t',comment='#',header=None)
 gene_symbol['gene_symbol'] = gene_symbol[8].apply(\
     lambda x: x.split('gene_name ')[1].split('"')[1])
 gene_symbol['gene'] = gene_symbol[8].apply(\
@@ -111,7 +111,7 @@ def color_map(LD):
 
 def matchsnp_preprocess(eqtl, gwas, lead_snp, ld):
     matchsnp = pd.concat([eqtl[['pvalue','beta','position']],gwas[['pval','beta']]],
-                         join='inner',axis=1)
+                        join='inner',axis=1)
     matchsnp.columns = ['eqtl','eqtl_beta','position','gwas','gwas_beta']
     matchsnp['eqtl'] = -np.log10(matchsnp['eqtl'])
     matchsnp['gwas'] = -np.log10(matchsnp['gwas'])
@@ -146,14 +146,14 @@ def matchsnp_preprocess(eqtl, gwas, lead_snp, ld):
 def gwas_matchsnp(gwas_only, gwas_both, bete_df):
     rs_ls = list(bete_df.index)
     matchsnp = pd.concat([gwas_only.loc[rs_ls][['rsid','pos','beta']],
-                          gwas_both.loc[rs_ls]['beta']],join='inner',axis=1)
+                        gwas_both.loc[rs_ls]['beta']],join='inner',axis=1)
     matchsnp.columns = ['rsid','position','gwasonly_beta','gwasboth_beta']
 
     matchsnp = pd.concat([matchsnp, bete_df[['LD','LD_color']]],join='inner',axis=1)
     return matchsnp
 
 def find_coloc_top_causal_SNP(gwas_session, gene):
-    result_folder = '/home/liulab/datasource/Astle_blood_trait/Astle_blood_trait_results'
+    result_folder = '/work/lc_data/datasource/Astle_blood_trait/Astle_blood_trait_results'
     result_path = os.path.join(result_folder, gwas_session)
     files = os.listdir(result_path)
     for file in files:
@@ -173,13 +173,13 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
     try:
         gwas_only_session = list(set(only_tmp['gwas_session']))[0]
         gwas_only = pd.read_csv(\
-            f'/home/liulab/datasource/Astle_blood_trait/{gwasfiledict[gwas_only_session]}',
+            f'/work/lc_data/datasource/Astle_blood_trait/{gwasfiledict[gwas_only_session]}',
             sep='\t')
         gwas_only.index = gwas_only['rsid']
         
         gwas_both_session = list(set(both_tmp['gwas_session']))[0]
         gwas_both = pd.read_csv(\
-            f'/home/liulab/datasource/Astle_blood_trait/{gwasfiledict[gwas_both_session]}',
+            f'/work/lc_data/datasource/Astle_blood_trait/{gwasfiledict[gwas_both_session]}',
             sep='\t')
         gwas_both.index = gwas_both['rsid']
         
@@ -189,7 +189,7 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         classes = ['<0.2','0.2-0.4','0.4-0.6','0.6-0.8','>0.8']
         colors = ListedColormap(color)
         eqtl = pd.read_csv(\
-            f'/home/liulab/datasource/preprocessed/eqtl/Whole_Blood/grouped/{chrom}/{gene}.tsv.gz',
+            f'/work/lc_data/datasource/preprocessed/eqtl/Whole_Blood/grouped/{chrom}/{gene}.tsv.gz',
             sep='\t')
         eqtl = eqtl.sort_values('pvalue')
         eqtl.index = eqtl['rsid']
@@ -235,20 +235,20 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
                         matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
                         marker='D', s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_only.loc[lead_snp]['position'], 
-                     matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
+                    matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
         else:
             color_ = 'pink'
             ax1.scatter(matchsnp_only.loc[lead_snp]['position'], 
                         matchsnp_only.loc[lead_snp]['gwas'],c='darkviolet', 
                         marker='D',s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_only.loc[lead_snp]['position'], 
-                     matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
+                    matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
             ax1.scatter(matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['position'], 
                         matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
                         c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['position'], 
-                     matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
-                     f"{topcoloc_snp_identify_by_gwas_only_session}")
+                    matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
+                    f"{topcoloc_snp_identify_by_gwas_only_session}")
         #plt.text(min(matchsnp_both['position']), max(matchsnp_only['gwas']), f"{only_annotation_text}")
         # plt.xlabel('Chromosome 7 (BP)')
         ax1.set_ylabel(f'{gwastraitname[gwas_only_session]}\n' + 'GWAS -log$_{10}$(${P}$)',fontsize=13)
@@ -264,7 +264,7 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
                     matchsnp_only.loc[lead_snp]['eqtl'], c='darkviolet', 
                     marker='D',s=60, edgecolors='black', linewidths=1)
         ax2.text(matchsnp_only.loc[lead_snp]['position'], 
-                 matchsnp_only.loc[lead_snp]['eqtl'], f"{lead_snp}")
+                matchsnp_only.loc[lead_snp]['eqtl'], f"{lead_snp}")
         ax2.set_xlabel(f'Chromosome {chrom} (MB)',fontsize=13)
         # plt.legend(*sc2.legend_elements("sizes", num=6))
         ax2.set_ylabel('Whole blood\neQTL -log$_{10}$(${P}$)',fontsize=13)
@@ -288,25 +288,25 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
                         matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
                         marker='D',s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_both.loc[lead_snp]['position'], 
-                     matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
+                    matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
         else:
             color_ = 'pink'
             ax1.scatter(matchsnp_both.loc[lead_snp]['position'], 
                         matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
                         marker='D',s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_both.loc[lead_snp]['position'], 
-                     matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
+                    matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
             ax1.scatter(matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['position'], 
                         matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'], 
                         c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
             ax1.text(matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['position'], 
-                     matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'], 
-                     f"{topcoloc_identify_by_gwas_both_session}")
+                    matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'], 
+                    f"{topcoloc_identify_by_gwas_both_session}")
 
         # plt.xlabel('Chromosome 7 (BP)')
         #plt.text(min(matchsnp_both['position']), max(matchsnp_both['gwas']), f"{both_annotation_text}")
         ax1.set_ylabel(f'{gwastraitname[gwas_both_session]}\n' + 'GWAS -log$_{10}$(${P}$)',
-                       fontsize=13)
+                    fontsize=13)
         ax1.spines.right.set_visible(False)
         ax1.spines.top.set_visible(False)
 
@@ -320,7 +320,7 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
                     s=60, edgecolors='black', linewidths=1)
         ax2.set_xlabel(f'Chromosome {chrom} (MB)',fontsize=13)
         ax2.text(matchsnp_only.loc[lead_snp]['position'], 
-                 matchsnp_only.loc[lead_snp]['eqtl'], f"{lead_snp}")
+                matchsnp_only.loc[lead_snp]['eqtl'], f"{lead_snp}")
         # plt.legend(*sc2.legend_elements("sizes", num=6))
         ax2.set_ylabel('Whole blood\neQTL -log$_{10}$(${P}$)',fontsize=13)
         ax2.spines.right.set_visible(False)
@@ -341,33 +341,33 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         if topcoloc_snp_identify_by_gwas_only_session == lead_snp:
             color_ = 'darkviolet'
             ax.scatter(matchsnp_only.loc[lead_snp]['eqtl'], 
-                       matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_only.loc[lead_snp]['eqtl'], 
                     matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
         else:
             color_ = 'pink'
             ax.scatter(matchsnp_only.loc[lead_snp]['eqtl'], 
-                       matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_only.loc[lead_snp]['eqtl'], 
                     matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
             ax.scatter(matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['eqtl'], 
-                       matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
-                       c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
+                    c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['eqtl'], 
                     matchsnp_only.loc[topcoloc_snp_identify_by_gwas_only_session]['gwas'], 
                     f"{topcoloc_snp_identify_by_gwas_only_session}")
 
         
         ax.scatter(matchsnp_only.loc[lead_snp]['eqtl'], 
-                   matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
-                   marker='D',s=60, edgecolors='black', linewidths=1)
+                matchsnp_only.loc[lead_snp]['gwas'], c='darkviolet', 
+                marker='D',s=60, edgecolors='black', linewidths=1)
         ax.text(matchsnp_only.loc[lead_snp]['eqtl'], 
                 matchsnp_only.loc[lead_snp]['gwas'], f"{lead_snp}")
         #ax.set_xlabel('Whole blood eQTL -log$_{10}$(${P}$)',fontsize=13)
         ax.set_ylabel(f'{gwastraitname[gwas_only_session]}\n'+'GWAS -log$_{10}$(${P}$)', 
-                      fontsize=12)
+                    fontsize=12)
         ax.spines.right.set_visible(False)
         ax.spines.top.set_visible(False)
         #plt.text(0, max(matchsnp_only['gwas']), f"{only_annotation_text}")
@@ -375,7 +375,7 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         #annot_text = f"Spearman coefficient={spear.correlation.round(3)}, P-value={'%.3g' % spear.pvalue}"
         #plt.text(0, min(matchsnp_only['gwas']), f"{annot_text}")
         ax.set_xlabel('Whole blood eQTL -log$_{10}$(${P}$)'+f"\nSpearman coefficient={spear.correlation.round(3)}, P-value={'%.3g' % spear.pvalue}",
-                      fontsize=12)
+                    fontsize=12)
         plt.savefig(f'/home/liulab/codes/locuscompare2_private/figure/supp_figure/{outfolder}/{gene}_pvalue_{category}_{gwas_only_session}_fdrthreshold.pdf',
                     format='pdf',bbox_inches='tight')
         plt.close()
@@ -387,12 +387,12 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         ax = plt.subplot(111)
         bete_df = matchsnp_only[matchsnp_only['beta_true'] == '1']
         ax.scatter(bete_df['eqtl_beta'], bete_df['gwas_beta'], c=bete_df['LD_color'],
-                   cmap=colors, alpha=0.8, s = 50, edgecolors='black', linewidths=1)
+                cmap=colors, alpha=0.8, s = 50, edgecolors='black', linewidths=1)
         if topcoloc_snp_identify_by_gwas_only_session == lead_snp:
             color_ = 'darkviolet'
             ax.scatter(bete_df.loc[lead_snp]['eqtl_beta'], 
-                       bete_df.loc[lead_snp]['gwas_beta'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    bete_df.loc[lead_snp]['gwas_beta'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(bete_df.loc[lead_snp]['eqtl_beta'], 
                     bete_df.loc[lead_snp]['gwas_beta'], f"{lead_snp}")
         else:
@@ -434,38 +434,38 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         fig = plt.figure(figsize = (4.5, 4.5))
         ax = plt.subplot(111)
         ax.scatter(matchsnp_both['eqtl'],matchsnp_both['gwas'], 
-                   c=matchsnp_both['LD_color'],cmap=colors, alpha=0.8, s = 50, 
-                   edgecolors='black', linewidths=1)
+                c=matchsnp_both['LD_color'],cmap=colors, alpha=0.8, s = 50, 
+                edgecolors='black', linewidths=1)
         if topcoloc_identify_by_gwas_both_session == lead_snp:
             color_ = 'darkviolet'
             ax.scatter(matchsnp_both.loc[lead_snp]['eqtl'], 
-                       matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_both.loc[lead_snp]['eqtl'], 
                     matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
         else:
             color_ = 'pink'
             ax.scatter(matchsnp_both.loc[lead_snp]['eqtl'], 
-                       matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_both.loc[lead_snp]['gwas'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_both.loc[lead_snp]['eqtl'], 
                     matchsnp_both.loc[lead_snp]['gwas'], f"{lead_snp}")
             ax.scatter(matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['eqtl'], 
-                       matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'],
-                       c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
+                    matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'],
+                    c=color_,marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['eqtl'],
                     matchsnp_both.loc[topcoloc_identify_by_gwas_both_session]['gwas'], 
                     f"{topcoloc_identify_by_gwas_both_session}")
 
         #plt.xlabel('Whole blood eQTL -log$_{10}$(${P}$)',fontsize=13)
         ax.set_ylabel(f'{gwastraitname[gwas_both_session]}\n' + 'GWAS -log$_{10}$(${P}$)',
-                      fontsize=12)
+                    fontsize=12)
         #plt.text(0, max(matchsnp_both['gwas']), f"{both_annotation_text}")
         spear = stats.spearmanr(matchsnp_both['eqtl'],matchsnp_both['gwas'])
         annot_text = f"Spearman coefficient={spear.correlation.round(3)}, P-value={'%.3g' % spear.pvalue}"
         #plt.text(0, min(matchsnp_both['gwas']), f"{annot_text}")
         ax.set_xlabel('Whole blood eQTL -log$_{10}$(${P}$)'+f"\nSpearman coefficient={spear.correlation.round(3)}, P-value={'%.3g' % spear.pvalue}",
-                      fontsize=12)
+                    fontsize=12)
         ax.spines.right.set_visible(False)
         ax.spines.top.set_visible(False)
         plt.savefig(f'/home/liulab/codes/locuscompare2_private/figure/supp_figure/{outfolder}/{gene}_pvalue_both_{gwas_both_session}_fdrthreshold.pdf',
@@ -479,12 +479,12 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         ax = plt.subplot(111)
         bete_df = matchsnp_both[matchsnp_both['beta_true'] == '1']
         ax.scatter(bete_df['eqtl_beta'], bete_df['gwas_beta'], c=bete_df['LD_color'], 
-                   cmap=colors, alpha=0.8, s = 50, edgecolors='black', linewidths=1)
+                cmap=colors, alpha=0.8, s = 50, edgecolors='black', linewidths=1)
         if topcoloc_snp_identify_by_gwas_only_session == lead_snp:
             color_ = 'darkviolet'
             ax.scatter(bete_df.loc[lead_snp]['eqtl_beta'], 
-                       bete_df.loc[lead_snp]['gwas_beta'], c='darkviolet', 
-                       marker='D',s=60, edgecolors='black', linewidths=1)
+                    bete_df.loc[lead_snp]['gwas_beta'], c='darkviolet', 
+                    marker='D',s=60, edgecolors='black', linewidths=1)
             ax.text(bete_df.loc[lead_snp]['eqtl_beta'], 
                     bete_df.loc[lead_snp]['gwas_beta'], f"{lead_snp}")
         else:
@@ -533,8 +533,8 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         ax = plt.subplot(111)
 
         ax.scatter(gwas_beta['gwasonly_beta'], gwas_beta['gwasboth_beta'], 
-                   c=gwas_beta['LD_color'],cmap=colors, alpha=0.8, s = 50, 
-                   edgecolors='black', linewidths=1)
+                c=gwas_beta['LD_color'],cmap=colors, alpha=0.8, s = 50, 
+                edgecolors='black', linewidths=1)
         if topcoloc_snp_identify_by_gwas_only_session in set(gwas_beta.index):
             ax.scatter(gwas_beta.loc[topcoloc_snp_identify_by_gwas_only_session]['gwasonly_beta'],
                     gwas_beta.loc[topcoloc_snp_identify_by_gwas_only_session]['gwasboth_beta'],
@@ -553,18 +553,18 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
             
         
         ax.scatter(gwas_beta.loc[lead_snp]['gwasonly_beta'], 
-                   gwas_beta.loc[lead_snp]['gwasboth_beta'], c='darkviolet',
-                   marker='D', s=60, edgecolors='black', linewidths=1)
+                gwas_beta.loc[lead_snp]['gwasboth_beta'], c='darkviolet',
+                marker='D', s=60, edgecolors='black', linewidths=1)
         
         ax.text(gwas_beta.loc[lead_snp]['gwasonly_beta'],
                 gwas_beta.loc[lead_snp]['gwasboth_beta'], f"{lead_snp}")
         #plt.xlabel(f'{gwastraitname[gwas_only_session]} GWAS effect size',fontsize=13)
         ax.set_ylabel(f'{gwastraitname[gwas_both_session]}\nGWAS effect size',
-                      fontsize=12)
+                    fontsize=12)
         pears = stats.pearsonr(gwas_beta['gwasonly_beta'],gwas_beta['gwasboth_beta'])
         annot_text = f"Pearson coefficient={pears.correlation.round(3)}, P-value={'%.3g' % pears.pvalue}"
         ax.set_xlabel(f'{gwastraitname[gwas_only_session]} GWAS effect size'+f"\n{annot_text}",
-                      fontsize=12)
+                    fontsize=12)
         #plt.text(0.0, min(bete_df['gwas_beta'])+0.015, f"Pearson coefficient={pears.correlation.round(4)}")
         #plt.text(0.0, min(bete_df['gwas_beta']), f"P-value={'%.3g' % pears.pvalue}")
         x = np.array(gwas_beta['gwasonly_beta']).reshape((-1, 1))
@@ -585,37 +585,65 @@ def locuscompareplot(gene, chrom, ld, outfolder, only_tmp, both_tmp):
         print(f"Gene: {gene}, chrom: {chrom}")
 
 
+df = pd.read_csv('/home/liulab/codes/locuscompare2_private/Astle_blood_trait/coloc_twas_signal_summary_20240923.tsv',sep='\t')
+df = df[df['coloc'] !=0]
+df = df[df['ecaviar'] !=0]
+df = df[df['fastenloc'] !=0]
+df = df[df['smr'] !=0]
+df = df[df['predixcan'] !=0]
+df = df[df['fusion'] !=0]
+
+
+
+
+coloc_only = df[df['category'] == 'colocalization_only']
+both = df[df['category'] == 'both']
+twas_only = df[df['category'] == 'twas_only']
+
+
+coloc_only = coloc_only[(coloc_only['coloc']>0.75) & (coloc_only['ecaviar'] >0.01) & (coloc_only['fastenloc']>0.5) & (coloc_only['smr']<6.516) & (coloc_only['predixcan']<6.915) & (coloc_only['fusion']<7.062)]
+twas_only = twas_only[(twas_only['coloc']<0.75) & (twas_only['ecaviar'] <0.01) & (twas_only['fastenloc']<0.5) & (twas_only['smr']>6.516) & (twas_only['predixcan']>6.915) & (twas_only['fusion']>7.062)]
+both = both[(both['coloc']>0.75) & (both['ecaviar'] >0.01) & (both['fastenloc']>0.5) & (both['smr']>6.516) & (both['predixcan']>6.915) & (both['fusion']>7.062)]
+
+
+coloc_both = list(set(coloc_only['gene']) & set(both['gene']))
+twas_both = list(set(twas_only['gene']) & set(both['gene']))
+
+coloc_twas = list(set(coloc_only['gene']) & set(twas_only['gene']))
+
+
 outfolder = 'illustrate_example'
 
-#for gene in ['ENSG00000054523']:
-for gene in ['ENSG00000245937']:
-    only_tmp = coloc_only[coloc_only['gene'] == gene]
-    both_tmp = both[both['gene'] == gene]
-    chrom = list(set(only_tmp['chr']))[0]
-    ld = pd.read_csv(f'/home/liulab/datasource/ld/tkg_p3v5a_ld_chr{chrom}_EUR.csv.gz',
-                     sep='\t',header=None)
-    print(f"Gene: {gene}")
-    locuscompareplot(gene,chrom, ld, outfolder, only_tmp, both_tmp)
-
-order = both.iloc[:,1:7].sum(axis=1)
+order = both.iloc[:,:6].sum(axis=1)
 both['order'] = order
 both = both.sort_values('order',ascending=False)
 
-order = twas_only.iloc[:,4:7].sum(axis=1)/twas_only.iloc[:,1:4].sum(axis=1)
+order = twas_only.iloc[:,3:6].sum(axis=1)/twas_only.iloc[:,1:4].sum(axis=1)
 twas_only['order'] = order
 twas_only = twas_only.sort_values('order',ascending=False)
 
-for gene in ['ENSG00000174529','ENSG00000187122']:
+
+for gene in coloc_both:
+#for gene in ['ENSG00000245937','ENSG00000054523']:
+	only_tmp = coloc_only[coloc_only['gene'] == gene]
+	both_tmp = both[both['gene'] == gene]
+	chrom = list(set(only_tmp['chr']))[0]
+	ld = pd.read_csv(f'/work/lc_data/datasource/ld/tkg_p3v5a_ld_chr{chrom}_EUR.csv.gz',sep='\t',header=None)
+	print(f"Gene: {gene}")
+	locuscompareplot(gene,chrom, ld, outfolder, only_tmp, both_tmp)
+
+for gene in twas_both:
+#for gene in ['ENSG00000174529']:
     only_tmp = twas_only[twas_only['gene'] == gene]
     both_tmp = both[both['gene'] == gene]
     chrom = list(set(only_tmp['chr']))[0]
-    ld = pd.read_csv(f'/home/liulab/datasource/ld/tkg_p3v5a_ld_chr{chrom}_EUR.csv.gz',
-                     sep='\t',header=None)
+    ld = pd.read_csv(f'/work/lc_data/datasource/ld/tkg_p3v5a_ld_chr{chrom}_EUR.csv.gz',sep='\t',header=None)
     print(f"Gene: {gene}")
     for _, row1 in only_tmp.iterrows():
         only_tmp_ = pd.DataFrame(row1).T
         for _, row2 in both_tmp.iterrows():
             both_tmp_ = pd.DataFrame(row2).T
-            locuscompareplot(gene,chrom, ld, outfolder, only_tmp, both_tmp_)
+            locuscompareplot(gene,chrom, ld, outfolder, only_tmp_, both_tmp_)
             break
         break
+    

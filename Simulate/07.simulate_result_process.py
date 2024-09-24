@@ -200,5 +200,5 @@ group = list(compare_twas_old_new['IS_POSITIVE'])
 
 newtwas['TWAS.P'] = newtwas['TWAS.P'].fillna(1)
 newtwas['TWAS.Z'] = newtwas['TWAS.Z'].fillna(0)
-newtwas.to_csv('LocusCompare2_visualization/Simulate//newtwas2_merged.tsv',sep='\t',index=False)
+newtwas.to_csv('LocusCompare2_visualization/Simulate/newtwas2_merged.tsv',sep='\t',index=False)
 
