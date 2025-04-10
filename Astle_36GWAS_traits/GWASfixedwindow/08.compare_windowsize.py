@@ -35,7 +35,7 @@ def scatterplot(df, tool1=None, tool2=None, tool1metric=None, tool2metric=None, 
     plt.axhline(y=threshold, color='sienna', linestyle='--')
 
     pearsonr_results = f"Pearson's r" + f"={round(pearsonr_coefficient,3)} p-value = " + "{:.2e}".format(pearsonr_pval)
-    spearman_results = f"Spearmanr's " + r"$\rho$" + f"={round(spearmanr_coefficient,3)} p-value = " + "{:.2e}".format(spearmanr_pval)
+    spearman_results = r"$\rho$" + f"={round(spearmanr_coefficient,3)}" 
     
     #plt.xlabel(f"{tool1} {tool1metric}\n{pearsonr_results}\n{spearman_results}", fontsize=14)
     plt.xlabel(f"{tool1level}\n{spearman_results}", fontsize=12)
@@ -45,37 +45,37 @@ def scatterplot(df, tool1=None, tool2=None, tool1metric=None, tool2metric=None, 
 
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
-    plt.savefig(f"/home/e1124850/github/locuscompare2_private/revise_20241015/{tool1}_{tool1level}_vs_{tool2}_{tool2level}.pdf",format='pdf', bbox_inches='tight')
+    plt.savefig(f"/home/users/nus/locuscompare2_private/rebuttle_20250121/fix_gwasloci_window/{tool1}_{tool1level}_vs_{tool2}_{tool2level}.pdf",format='pdf', bbox_inches='tight')
 
 
 # coloc gene vs coloc loci
-coloc_gene = pd.read_csv('/home/e1124850/project/locuscompare2file/full_coloc_astle/GCST004599.full.coloc.tsv',sep='\t')
+coloc_gene = pd.read_csv('/home/users/nus/locuscompare2file/GCST004599.full.coloc.tsv',sep='\t')
 coloc_gene.index = coloc_gene['gene_id']
-coloc_loci = pd.read_csv('/home/e1124850/project/locuscompare2file/Astle_blood_trait/Astle_blood_trait_results/GCST004599/coloc_output_20240518223806.tsv.gz',sep='\t')
-coloc_loci.index = coloc_loci['gene_id']
+coloc_loci = pd.read_csv('/home/users/nus/scratch/astle_202501_global_LD_window/processed/default/GCST004599_fixed_GWAS_Loci_window/Whole_Blood/EUR/eqtl/coloc/analyzed/coloc_output_20250218115841.tsv.gz',sep='\t')
+coloc_loci.index = coloc_loci['gene_id'].apply(lambda x: x.split('.')[0])
 coloc_loci = coloc_loci.drop_duplicates('gene_id')
 df = pd.concat([coloc_gene['overall_H4'], coloc_loci['overall_H4']], join='inner', axis=1)
 df.columns = ["gene-level overall_H4", "loci-level overall_H4"]
-scatterplot(df, tool1='COLOC', tool2='COLOC', tool1metric='gene-level overall_H4', tool2metric='loci-level overall_H4', metric='overall_H4', tool1level='eQTL-level', tool2level='GWAS-level', threshold=0.75)
+scatterplot(df, tool1='COLOC', tool2='COLOC', tool1metric='gene-level overall_H4', tool2metric='loci-level overall_H4', metric='overall_H4', tool1level='QTL fixed-window loci', tool2level='GWAS fixed-window loci', threshold=0.75)
 
 # fastenloc gene vs fastenloc loci
 
-fastenloc_gene = pd.read_csv('~/project/locuscompare2file/fastenlocv3.1_astle_gene_level_nosetupprior/GCST004599_withoutcolocprior.enloc.gene.out',sep='\s+')
+fastenloc_gene = pd.read_csv('/home/users/nus/locuscompare2file/GCST004599_withoutcolocprior.enloc.gene.out',sep='\s+')
 fastenloc_gene.index = fastenloc_gene['Gene']
-fastenloc_loci = pd.read_csv('/home/e1124850/project/locuscompare2file/fastenlocv3gwasloci/GCST004599/processed/default/GCST004599/Whole_Blood/EUR/fastenloc/analyzed/fastenloc_output_20240923213145.tsv.gz',sep='\t')
+fastenloc_loci = pd.read_csv('/home/users/nus/scratch/astle_202501_global_LD_window/processed/default/GCST004599_fixed_GWAS_Loci_window/Whole_Blood/EUR/eqtl/fastenloc/analyzed/fastenloc_output_20250321165458.tsv.gz',sep='\t')
+fastenloc_loci.index = fastenloc_loci['gene_id'].apply(lambda x: x.split('.')[0])
 fastenloc_loci = fastenloc_loci.drop_duplicates('gene_id')
-fastenloc_loci.index = fastenloc_loci['gene_id']
 df = pd.concat([fastenloc_gene['GRCP'], fastenloc_loci['GRCP']], join='inner', axis=1)
 df.columns = ["gene-level GRCP", "loci-level GRCP"]
-scatterplot(df, tool1='fastENLOC', tool2='fastENLOC', tool1metric='gene-level GRCP', tool2metric='loci-level GRCP', metric='GRCP', tool1level='eQTL-level', tool2level='GWAS-level', threshold = 0.5)
+scatterplot(df, tool1='fastENLOC', tool2='fastENLOC', tool1metric='gene-level GRCP', tool2metric='loci-level GRCP', metric='GRCP', tool1level='QTL fixed-window loci', tool2level='GWAS fixed-window loci', threshold = 0.5)
 
 
 # ecaviar gene vs ecaviar loci
-ecaviar_gene = pd.read_csv('/home/e1124850/project/locuscompare2file/Astle_blood_trait/GCST004599_ecaviar_genelevel_20241025/processed/default/GCST004599/Whole_Blood/EUR/ecaviar/analyzed/ecaviar_output_20241026211608.tsv.gz',sep='\t')
+ecaviar_gene = pd.read_csv('/home/users/nus/locuscompare2file/ecaviar_output_20241026211608.tsv.gz',sep='\t')
 ecaviar_gene.index = ecaviar_gene['gene_id']
-ecaviar_loci = pd.read_csv('/home/e1124850/project/locuscompare2file/Astle_blood_trait/Astle_blood_trait_results/GCST004599/ecaviar_output_20240521213302.tsv.gz',sep='\t')
-ecaviar_loci.index = ecaviar_loci['gene_id']
+ecaviar_loci = pd.read_csv('/home/users/nus/scratch/astle_202501_global_LD_window/processed/default/GCST004599_fixed_GWAS_Loci_window/Whole_Blood/EUR/eqtl/ecaviar/analyzed/ecaviar_output_20250321195322.tsv.gz',sep='\t')
+ecaviar_loci.index = ecaviar_loci['gene_id'].apply(lambda x: x.split('.')[0])
 ecaviar_loci = ecaviar_loci.drop_duplicates('gene_id')
 df = pd.concat([ecaviar_gene['clpp'], ecaviar_loci['clpp']], join='inner', axis=1)
 df.columns = ["gene-level CLPP", "loci-level CLPP"]
-scatterplot(df, tool1='eCAVIAR', tool2='eCAVIAR', tool1metric='gene-level CLPP', tool2metric='loci-level CLPP', metric='CLPP', tool1level='eQTL-level', tool2level='GWAS-level', threshold=0.1)
+scatterplot(df, tool1='eCAVIAR', tool2='eCAVIAR', tool1metric='gene-level CLPP', tool2metric='loci-level CLPP', metric='CLPP', tool1level='QTL fixed-window loci', tool2level='GWAS fixed-window loci', threshold=0.1)

@@ -158,7 +158,7 @@ def main(src_dir, dest_dir, genotype_dir, gene_info):
         os.system(f'gzip {cov_file}')
 
 if __name__ == '__main__':
-    main('/data/projects/11003054/e1124850/locuscompare2file/sim_scheme_2/sim_rst/predixcan_wts',
-        '/data/projects/11003054/e1124850/locuscompare2file/sim_coloc/sim_predixcan_4',
-        '/data/projects/11003054/e1124850/locuscompare2file/sim_gwas_file/vcf',
-        '/data/projects/11003054/e1124850/locuscompare2file/sim_coloc/sim_predixcan_db/genecode_parsed.tsv')
+    main('/data/projects/11003054/locuscompare2file/sim_scheme_2/sim_rst/predixcan_wts',
+        '/data/projects/11003054/locuscompare2file/sim_coloc/sim_predixcan_4',
+        '/data/projects/11003054/locuscompare2file/sim_gwas_file/vcf',
+        '/data/projects/11003054/locuscompare2file/sim_coloc/sim_predixcan_db/genecode_parsed.tsv')

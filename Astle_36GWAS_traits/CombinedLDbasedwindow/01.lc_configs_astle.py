@@ -1,9 +1,6 @@
-import os
+from pathlib import Path
 import pandas as pd
-
-tissue_dict = {
-    'Whole_Blood':'670',
-    }
+import os
 
 
 gwasfiledict = {
@@ -45,8 +42,9 @@ gwasfiledict = {
     'GCST004625':'preprocessed_mono_build37_170721_20161212.tsv.gz'
     }
 
-gwassamplesize = {
 
+
+gwassamplesize = {
     'GCST004599':'164454',
     'GCST004601':'172952',
     'GCST004600':'172378',
@@ -85,15 +83,6 @@ gwassamplesize = {
     'GCST004634':'170223',
     }
 gwastraittype = {
-    'GCST004626':'quant',
-    'GCST004627':'quant',
-    'GCST004628':'quant',
-    'GCST004629':'quant',
-    'GCST004630':'quant',
-    'GCST004631':'quant',
-    'GCST004632':'quant',
-    'GCST004633':'quant',
-    'GCST004634':'quant',
     'GCST004599':'quant',
     'GCST004601':'quant',
     'GCST004600':'quant',
@@ -107,9 +96,9 @@ gwastraittype = {
     'GCST004609':'quant',
     'GCST004610':'quant',
     'GCST004611':'quant',
+    'GCST004612':'quant',
     'GCST004613':'quant',
     'GCST004614':'quant',
-    'GCST004612':'quant',
     'GCST004615':'quant',
     'GCST004616':'quant',
     'GCST004617':'quant',
@@ -120,119 +109,123 @@ gwastraittype = {
     'GCST004622':'quant',
     'GCST004623':'quant',
     'GCST004624':'quant',
-    'GCST004625':'quant'
+    'GCST004625':'quant',
+    'GCST004626':'quant',
+    'GCST004627':'quant',
+    'GCST004628':'quant',
+    'GCST004629':'quant',
+    'GCST004630':'quant',
+    'GCST004631':'quant',
+    'GCST004632':'quant',
+    'GCST004633':'quant',
+    'GCST004634':'quant',
     }
-
-
-
-
 
 
 
 def main(dest_dir):
 
-    template = '''input:
-  eqtl:
-    col_name_mapping:
-      alt: alt
-      beta: beta
-      chrom: chromosome
-      gene_id: molecular_trait_id
-      maf: maf
-      position: position
-      pvalue: pvalue
-      ref: ref
-      se: se
-      snp: rsid
-    file: /home/users/nus/e1124850/scratch/tmp/TISSUE.v8.all_association.processed.txt.gz
-    eqtl_preprocessed_dir: /home/users/nus/e1124850/scratch/tmp/locuscompare2file/preprocessed/
-    sample_size: EQTLSAMPLESIZE
-    sep: '\\t'
-    tissue: TISSUE
-    type: quant
-  eqtl_finemapping_file: /data/projects/11003054/e1124850/locuscompare2file/v8.vcf.gz
-  genecode: /data/projects/11003054/e1124850/locuscompare2file/gencode.v45.basic.annotation.gtf.gz
+    template = '''working_dir: /home/users/nus/scratch/astle_202504
+tools:
+- ecaviar
+- fastenloc
+- fusion
+- coloc
+- smr
+- predixcan
+input:
   gwas:
+    file: /home/users/nus/locuscompare2file/Astle_blood_trait/GWASFILEPATH
+    trait: GWAS_TRAIT_combined_LD
+    sample_size: GWASSAMPLESIZE
+    type: quant
+    genomic_window: LD_based_window
+    window_size: 500000
+    LD_r2_filter: 0.1
+    LD_additional_expansion: 50000
+    target_loci: 'ALL'
     col_name_mapping:
-      beta: beta
+      snp: rsid
       chrom: chr
+      position: pos
+      beta: beta
       effect_allele: alt
       other_allele: ref
-      position: pos
       pvalue: pval
       se: se
-      snp: rsid
-    file: /data/projects/11003054/e1124850/locuscompare2file/Astle_blood_trait/GWASFILEPATH
-    sample_size: GWASSAMPLESIZE
-    trait: GWAS_TRAIT
-    type: GWASTRAITTYPE
-    sep: '\\t'
-  ld_block_loci_file: /data/projects/11003054/e1124850/locuscompare2file/eur_hg38_ld_block.bed
-  prediction_dir: /data/projects/11003054/e1124850/locuscompare2file/predixcan_model/mashr
-  twas_model_dir: /data/projects/11003054/e1124850/locuscompare2file/GTEx_twas_model
-  vcf: /data/projects/11003054/e1124850/locuscompare2file/vcf_hg38
+      variant_id: 
+  qtl:
+    qtl_type: 'eqtl'
+    file: /home/users/nus/scratch/qsub_dir/Whole_Blood.v8.preprocessed.eqtl.tsv.gz
+    qtl_preprocessed_dir: /home/users/nus/scratch/astle_202504/preprocessed
+    biological_context: Whole_Blood
+    sample_size: 558
+    type: quant
+    genomic_window: LD_based_window
+    window_size: 500000
+    LD_r2_filter: 0.1
+    LD_additional_expansion: 50000
+    target_loci: 'ALL'
+    col_name_mapping:
+      snp: rs_id_dbSNP151_GRCh38p7
+      chrom: chr
+      position: pos
+      beta: slope
+      alt: alt
+      ref: ref
+      pvalue: pval_nominal
+      se: slope_se
+      phenotype_id: phenotype_id
+      maf: maf
+      variant_id: variant_id
+  vcf: /home/users/nus/scratch/1000genomes_new
+  genecode: /data/projects/11003054/locuscompare2file/gencode.v26.basic.annotation.gtf.gz
+  ld_block_loci_file: /home/users/nus/locuscompare2file/eur_hg38_ld_block.bed
+  prediction_dir: /home/users/nus/locuscompare2file/predixcan/eqtl/mashr
+  twas_model_dir: /data/projects/11003054/locuscompare2file/twas_model
+min_matching_number: 5
 p-value_threshold:
-  eqtl: 1.0
-  gwas: 5.0e-8
+  gwas: 5.0e-08
+  qtl: 5.0e-08
 population: EUR
-working_dir: /data/projects/11003054/e1124850/locuscompare2file/Astle_blood_trait/OUTPUTPATH
-tools: 
-- fusion
-- predixcan
-- smr
-- coloc
-- fastenloc
-- ecaviar
 
 '''
 
     pbstemplat='''#PBS -q normal
-#PBS -l select=1:ncpus=5:mem=300G
+#PBS -l select=1:ncpus=3:mem=100G
 #PBS -l walltime=24:00:00
-#PBS -P Personal
-#PBS -N CONFIGURE
-#PBS -o /home/users/nus/e1124850/scratch/qsub_dir/CONFIGURE.o
-#PBS -e /home/users/nus/e1124850/scratch/qsub_dir/CONFIGURE.e
+#PBS -P 11003054
+#PBS -N CONFIGURE.global
+#PBS -o /home/users/nus/scratch/qsub_dir/CONFIGURE.global.o
+#PBS -e /home/users/nus/scratch/qsub_dir/CONFIGURE.global.e
 
 
 
-module load miniforge3/23.10
-module load cuda/12.2.2
+source /home/project/11003054/MM/software/anaconda3/etc/profile.d/conda.sh
+conda deactivate
+conda deactivate
 conda activate colotools
 
 
-python /home/users/nus/e1124850/locuscompare2/locuscompare2-standalone/colotools.py \
---config /data/projects/11003054/e1124850/locuscompare2file/Astle_blood_trait/config/CONFIGURE \
---log /home/users/nus/e1124850/scratch/tmp/CONFIGURE.log
-
-
+python /home/users/nus/locuscompare2advanced/locuscompare2advanced.py \
+--config /home/users/nus/locuscompare2advanced/config/Astle_config/global_LD_based_window/CONFIGURE \
+--tools_config /home/users/nus/locuscompare2advanced/config/tools_config.yml \
 '''
-    # gene_name_ls = pd.read_csv('/data/projects/11003054/e1124850/locuscompare2file/matrixeqtl_file/gene_name.tsv')
-    #gene_name_ls = pd.read_csv('/Users/phoebel/gene_name.tsv')
-    #for gene_name in gene_name_ls['gene']:
-    #    cfg = template.replace('@', gene_name)
-    #    with open(os.path.join(dest_dir, f'{gene_name}.configure'), 'w') as out:
-    #        out.write(cfg)
 
-    
     for gwas_ in gwasfiledict.keys():  
         cfg = template.replace('GWASFILEPATH', gwasfiledict[gwas_])
         cfg = cfg.replace('GWASSAMPLESIZE', gwassamplesize[gwas_])
         cfg = cfg.replace('GWASTRAITTYPE', gwastraittype[gwas_])
         cfg = cfg.replace('GWAS_TRAIT', gwas_)
-        cfg = cfg.replace('OUTPUTPATH', gwas_)
-        for tissue in tissue_dict.keys():
-            cfg_ = cfg.replace('TISSUE', tissue)
-            cfg_ = cfg_.replace('EQTLSAMPLESIZE', tissue_dict[tissue])
 
-            with open(os.path.join(dest_dir, f'{gwas_}.configure'), 'w') as out:
-                out.write(cfg_)
-                
-            pbs = pbstemplat.replace('CONFIGURE', f'{gwas_}.configure')
-            with open(os.path.join('/Users/phoebel/pbsjob', f'{gwas_}.{tissue}.pbs'), 'w') as out:
-                out.write(pbs)
-            
-            
+        with open(os.path.join(dest_dir, f'{gwas_}.configure'), 'w') as out:
+            out.write(cfg)
 
-#if __name__ == '__main__':
-main('/Users/phoebel/configurefiles')
+        pbs = pbstemplat.replace('CONFIGURE', f'{gwas_}.configure')
+        with open(os.path.join('/Users/phoebel/pbsjob_global', f'{gwas_}.Whole_Blood.pbs'), 'w') as out:
+            out.write(pbs)
+
+
+
+
+main('/Users/phoebel/github/locuscompare2advanced/config/Astle_config/global_LD_based_window')

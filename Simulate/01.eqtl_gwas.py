@@ -7,9 +7,9 @@ import scipy.stats
 
 
 def convert_sbams_to_split(sbams_dir, dest_dir,
-                           genecode='/data/projects/11003054/e1124850/locuscompare2file/gtf_all_gene.tsv',
+                           genecode='/data/projects/11003054/locuscompare2file/gtf_all_gene.tsv',
                            individual_num=500,
-                           dbsnp_ref_path='/data/projects/11003054/e1124850/locuscompare2file/vcf_hg38/EUR/chr5.vcf.gz'):
+                           dbsnp_ref_path='/data/projects/11003054/locuscompare2file/vcf_hg38/EUR/chr5.vcf.gz'):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     sum_dir = os.path.join(dest_dir, 'sum')
@@ -127,14 +127,14 @@ def convert_sbams_to_split(sbams_dir, dest_dir,
         sum_out = os.path.join(sum_dir, f'{gene_id}.tsv.gz')
         ana_result_df.to_csv(sum_out, sep='\t', header=True, index=False)
 
-convert_sbams_to_split('/data/projects/11003054/e1124850/locuscompare2file/sim_scheme_1/sim_data/eqtl_sbams', '/data/projects/11003054/e1124850/locuscompare2file/sim_eqtl_20240422')
-convert_sbams_to_split('/data/projects/11003054/e1124850/locuscompare2file/sim_scheme_1/sim_data/gwas_sbams', '/data/projects/11003054/e1124850/locuscompare2file/sim_gwas_20240422')
+convert_sbams_to_split('/data/projects/11003054/locuscompare2file/sim_scheme_1/sim_data/eqtl_sbams', '/data/projects/11003054/locuscompare2file/sim_eqtl_20240422')
+convert_sbams_to_split('/data/projects/11003054/locuscompare2file/sim_scheme_1/sim_data/gwas_sbams', '/data/projects/11003054/locuscompare2file/sim_gwas_20240422')
 
 
 def convert_sbams_to_merged(sbams_dir, dest_dir,prefix='out',
-                           genecode='/data/projects/11003054/e1124850/locuscompare2file/gtf_all_gene.tsv',
+                           genecode='/data/projects/11003054/locuscompare2file/gtf_all_gene.tsv',
                            individual_num=500,
-                           dbsnp_ref_path='/data/projects/11003054/e1124850/locuscompare2file/vcf_hg38/EUR/chr5.vcf.gz'):
+                           dbsnp_ref_path='/data/projects/11003054/locuscompare2file/vcf_hg38/EUR/chr5.vcf.gz'):
     pre_vcf_out = os.path.join(dest_dir, f'pre_{prefix}.vcf')
     bed_out = os.path.join(dest_dir, f'{prefix}.bed')
     ind_ids = [f'id{k}' for k in range(1, individual_num + 1)]
@@ -250,8 +250,8 @@ def convert_sbams_to_merged(sbams_dir, dest_dir,prefix='out',
     sumstats_df.to_csv(sum_out, sep='\t', header=True, index=False)
     
     
-convert_sbams_to_merged('/data/projects/11003054/e1124850/locuscompare2file/sim_scheme_1/sim_data/eqtl_sbams', '/data/projects/11003054/e1124850/locuscompare2file/sim_eqtl_20240430')
-convert_sbams_to_merged('/data/projects/11003054/e1124850/locuscompare2file/sim_scheme_1/sim_data/gwas_sbams', '/data/projects/11003054/e1124850/locuscompare2file/sim_gwas_20240430')
+convert_sbams_to_merged('/data/projects/11003054/locuscompare2file/sim_scheme_1/sim_data/eqtl_sbams', '/data/projects/11003054/locuscompare2file/sim_eqtl_20240430')
+convert_sbams_to_merged('/data/projects/11003054/locuscompare2file/sim_scheme_1/sim_data/gwas_sbams', '/data/projects/11003054/locuscompare2file/sim_gwas_20240430')
 
 
 
